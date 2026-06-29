@@ -15,7 +15,10 @@ SECRET_KEY = 'django-insecure-0@&3#0ub_c^!j7hwtrtkh7ze_3i0fno4-yruinx9po93w*ouqc
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['sarah-cafe.onrender.com']
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    'sarah-cafe.onrender.com',
+]
 
 
 # Application definition

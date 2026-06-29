@@ -1,0 +1,431 @@
+{% extends 'base.html' %}
+{% block title %}Order #{{ order.id }}{% endblock %}
+{% block content %}
+
+<div class="order-detail-page">
+
+    <!-- Header -->
+    <div class="order-header">
+        <div>
+            <p class="order-eyebrow">Sarah Coffee Store</p>
+            <h1 class="order-title">Order <em>#{{ order.id }}</em></h1>
+            <p class="order-date">Placed on {{ order.created_at|date:"F d, Y \a\t h:i A" }}</p>
+        </div>
+        <a href="{% url 'my_orders' %}" class="back-btn">← Back to Orders</a>
+    </div>
+
+    <!-- Info cards grid -->
+    <div class="detail-grid">
+
+        <!-- Order info -->
+        <div class="detail-card">
+            <p class="card-eyebrow">Order Information</p>
+            <div class="info-rows">
+                <div class="info-row">
+                    <span class="info-label">Order Number</span>
+                    <span class="info-val order-num">#{{ order.id }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Status</span>
+                    <span class="status-badge {{ order.status|lower }}">{{ order.status }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Payment</span>
+                    {% if order.payment_status == "Paid" %}
+                        <span class="payment-badge paid">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            Paid
+                        </span>
+                    {% else %}
+                        <span class="payment-badge unpaid">{{ order.payment_status }}</span>
+                    {% endif %}
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Order Total</span>
+                    <span class="info-total">${{ order.total_price }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Shipping info -->
+        <div class="detail-card">
+            <p class="card-eyebrow">Shipping Information</p>
+            <div class="shipping-block">
+                <p class="shipping-name">{{ order.full_name }}</p>
+                <p class="shipping-line">{{ order.address }}</p>
+                {% if order.city %}<p class="shipping-line">{{ order.city }}{% if order.state %}, {{ order.state }}{% endif %}</p>{% endif %}
+                {% if order.country %}<p class="shipping-line">{{ order.country }}</p>{% endif %}
+                <p class="shipping-phone">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.64A2 2 0 012 .98h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+                    {{ order.phone }}
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Ordered items table -->
+    <div class="items-card">
+        <p class="card-eyebrow">Ordered Items</p>
+        <h2 class="items-title">Your Coffee</h2>
+
+        <div class="items-table-wrap">
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Qty</th>
+                        <th>Price</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in order.items.all %}
+                    <tr>
+                        <td class="item-name-cell">
+                            {% if item.product.image %}
+                                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="item-thumb">
+                            {% else %}
+                                <div class="item-thumb item-thumb-ph">☕</div>
+                            {% endif %}
+                            <div class="item-text">
+                                <span class="item-name">{{ item.product.name }}</span>
+                                {% if item.product.origin %}<span class="item-origin">{{ item.product.origin }}</span>{% endif %}
+                            </div>
+                        </td>
+                        <td class="item-center">× {{ item.quantity }}</td>
+                        <td class="item-center">${{ item.price }}</td>
+                        <td class="item-subtotal">${{ item.subtotal }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="items-empty">No items found for this order.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Total row -->
+        <div class="grand-total-row">
+            <span class="grand-total-label">Order Total</span>
+            <span class="grand-total-val">${{ order.total_price }}</span>
+        </div>
+    </div>
+
+</div>
+
+<style>
+    .order-detail-page {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 4rem 2rem 6rem;
+    }
+
+    /* ── Header ── */
+    .order-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        margin-bottom: 2.75rem;
+    }
+
+    .order-eyebrow {
+        font-size: .72rem;
+        letter-spacing: .14em;
+        text-transform: uppercase;
+        color: var(--caramel);
+        margin-bottom: .5rem;
+    }
+
+    .order-title {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(2rem, 5vw, 3rem);
+        font-weight: 700;
+        color: var(--cream);
+        line-height: 1.1;
+        margin-bottom: .55rem;
+    }
+
+    .order-title em { color: var(--caramel); font-style: normal; }
+
+    .order-date {
+        font-size: .85rem;
+        color: var(--cream-dim);
+    }
+
+    .back-btn {
+        background: rgba(200,134,74,.12);
+        color: var(--caramel);
+        border: 1px solid rgba(200,134,74,.28);
+        text-decoration: none;
+        padding: .65rem 1.35rem;
+        border-radius: 50px;
+        font-size: .8rem;
+        font-weight: 600;
+        letter-spacing: .05em;
+        white-space: nowrap;
+        transition: background .2s, color .2s;
+        flex-shrink: 0;
+    }
+
+    .back-btn:hover { background: var(--caramel); color: var(--espresso); }
+
+    /* ── Cards grid ── */
+    .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.25rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .detail-card, .items-card {
+        background: var(--roast);
+        border: 1px solid rgba(200,134,74,.15);
+        border-radius: 16px;
+        padding: 1.75rem;
+    }
+
+    .card-eyebrow {
+        font-size: .67rem;
+        letter-spacing: .13em;
+        text-transform: uppercase;
+        color: var(--caramel);
+        margin-bottom: 1.1rem;
+    }
+
+    /* ── Order info rows ── */
+    .info-rows { display: flex; flex-direction: column; }
+
+    .info-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: .75rem 0;
+        border-bottom: 1px solid rgba(200,134,74,.08);
+        gap: 1rem;
+    }
+
+    .info-row:last-child { border-bottom: none; }
+
+    .info-label {
+        font-size: .75rem;
+        letter-spacing: .07em;
+        text-transform: uppercase;
+        color: var(--medium);
+        flex-shrink: 0;
+    }
+
+    .info-val { font-size: .9rem; color: var(--cream); font-weight: 500; }
+
+    .order-num {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--medium);
+    }
+
+    .info-total {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--caramel);
+    }
+
+    /* Status badge */
+    .status-badge {
+        display: inline-block;
+        font-size: .67rem;
+        font-weight: 700;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        padding: .3rem .8rem;
+        border-radius: 50px;
+    }
+
+    .status-badge.pending   { background: rgba(200,134,74,.15); color: var(--caramel); border: 1px solid rgba(200,134,74,.3); }
+    .status-badge.approved  { background: rgba(100,190,120,.1);  color: #78c87a;        border: 1px solid rgba(100,190,120,.25); }
+    .status-badge.delivered { background: rgba(100,150,220,.1);  color: #7ab0e8;        border: 1px solid rgba(100,150,220,.25); }
+    .status-badge.rejected,
+    .status-badge.cancelled { background: rgba(200,80,70,.08);   color: #d9786a;        border: 1px solid rgba(200,80,70,.2); }
+
+    /* Payment badge */
+    .payment-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: .3rem;
+        font-size: .67rem;
+        font-weight: 700;
+        letter-spacing: .07em;
+        text-transform: uppercase;
+        padding: .3rem .75rem;
+        border-radius: 50px;
+    }
+
+    .payment-badge.paid   { background: rgba(100,190,120,.12); color: #78c87a; border: 1px solid rgba(100,190,120,.25); }
+    .payment-badge.unpaid { background: rgba(200,80,70,.08);   color: #d9786a; border: 1px solid rgba(200,80,70,.2); }
+
+    /* ── Shipping card ── */
+    .shipping-block { display: flex; flex-direction: column; gap: .45rem; }
+
+    .shipping-name {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--cream);
+    }
+
+    .shipping-line {
+        font-size: .88rem;
+        color: var(--cream-dim);
+        line-height: 1.5;
+    }
+
+    .shipping-phone {
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+        font-size: .85rem;
+        color: var(--medium);
+        margin-top: .25rem;
+    }
+
+    .shipping-phone svg { color: var(--caramel); flex-shrink: 0; }
+
+    /* ── Items card ── */
+    .items-card { margin-top: 0; }
+
+    .items-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.4rem;
+        color: var(--cream);
+        margin-bottom: 1.5rem;
+        margin-top: -.25rem;
+    }
+
+    .items-table-wrap { overflow-x: auto; }
+
+    .items-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 500px;
+    }
+
+    .items-table thead tr {
+        border-bottom: 1px solid rgba(200,134,74,.15);
+    }
+
+    .items-table th {
+        padding: .7rem .85rem;
+        font-size: .67rem;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+        color: var(--medium);
+        font-weight: 500;
+        text-align: left;
+    }
+
+    .items-table tbody tr {
+        border-bottom: 1px solid rgba(200,134,74,.07);
+        transition: background .18s;
+    }
+
+    .items-table tbody tr:last-child { border-bottom: none; }
+    .items-table tbody tr:hover { background: rgba(200,134,74,.04); }
+
+    .items-table td {
+        padding: .9rem .85rem;
+        font-size: .875rem;
+        color: var(--cream-dim);
+        vertical-align: middle;
+    }
+
+    /* Product cell */
+    .item-name-cell {
+        display: flex !important;
+        align-items: center;
+        gap: .85rem;
+    }
+
+    .item-thumb {
+        width: 48px;
+        height: 48px;
+        border-radius: 9px;
+        object-fit: cover;
+        border: 1px solid rgba(200,134,74,.15);
+        flex-shrink: 0;
+    }
+
+    .item-thumb-ph {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(26,15,10,.5);
+        font-size: 1.25rem;
+        opacity: .3;
+    }
+
+    .item-text { display: flex; flex-direction: column; gap: .15rem; }
+
+    .item-name {
+        font-family: 'Playfair Display', serif;
+        font-size: .95rem;
+        color: var(--cream);
+        font-weight: 600;
+    }
+
+    .item-origin { font-size: .72rem; color: var(--medium); }
+
+    .item-center { text-align: center; }
+
+    .item-subtotal {
+        font-family: 'Playfair Display', serif;
+        font-size: 1rem !important;
+        font-weight: 700;
+        color: var(--caramel) !important;
+        text-align: right;
+    }
+
+    .items-empty {
+        text-align: center;
+        color: var(--medium) !important;
+        padding: 2rem !important;
+        font-style: italic;
+    }
+
+    /* Grand total */
+    .grand-total-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 1.25rem;
+        margin-top: .5rem;
+        border-top: 1px solid rgba(200,134,74,.15);
+    }
+
+    .grand-total-label {
+        font-size: .78rem;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        color: var(--medium);
+        font-weight: 500;
+    }
+
+    .grand-total-val {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--caramel);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+        .order-detail-page { padding: 2.5rem 1.25rem 4rem; }
+        .order-header { flex-direction: column; align-items: flex-start; }
+        .back-btn { width: 100%; text-align: center; }
+    }
+</style>
+
+{% endblock %}

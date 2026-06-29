@@ -114,7 +114,12 @@
 <section class="cta-section">
     <h2>Come find us.</h2>
     <p>127 Burnside Ave, Portland OR · Mon–Sun 7am–7pm</p>
+    {% if user.is_authenticated %}
+    <a href="{% url 'shop' %}" class="btn-cta">Browse Products</a>
+    {% else %}
     <a href="{% url 'register' %}" class="btn-cta">Create an Account</a>
+    {% endif %}
+
 </section>
 
 <style>
