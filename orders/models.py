@@ -74,6 +74,8 @@ class Order(models.Model):
 
         ("Pending", "Pending"),
 
+        ("Cancelled", "Cancelled"),
+
         ("Paid", "Paid"),
 
     ]
