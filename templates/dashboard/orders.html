@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block title %}Customer Orders{% endblock %}
+
+{% block content %}
+
+<section class="dashboard-section">
+
+    <div class="dashboard-header">
+        <h1>Customer Orders</h1>
+        <form method="get">
+            <input
+                type="text"
+                name="search"
+                placeholder="Search customer…"
+                value="{{ search }}">
+        </form>
+    </div>
+
+    {# ── Desktop table ── #}
+    <div class="table-wrapper">
+        <table class="dashboard-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Customer</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Payment</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td style="color: var(--medium); font-size: .82rem; font-weight: 600;">#{{ order.id }}</td>
+                    <td style="color: var(--cream); font-weight: 500;">{{ order.full_name }}</td>
+                    <td style="color: var(--caramel); font-weight: 600;">${{ order.total_price }}</td>
+                    <td>
+                        <span class="badge
+                            {% if order.status == 'completed' %}badge-completed
+                            {% elif order.status == 'cancelled' %}badge-cancelled
+                            {% else %}badge-pending{% endif %}">
+                            {{ order.status }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge
+                            {% if order.payment_status == 'paid' %}badge-paid
+                            {% else %}badge-unpaid{% endif %}">
+                            {{ order.payment_status }}
+                        </span>
+                    </td>
+                    <td style="font-size: .85rem; white-space: nowrap;">{{ order.created_at|date:"M d, Y" }}</td>
+                    <td>
+                        <a href="{% url 'dashboard_order_detail' order.id %}" class="btn-view">View</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" style="text-align: center; padding: 3rem; color: var(--medium);">
+                        No orders found.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {# ── Mobile cards ── #}
+    <div class="order-cards">
+        {% for order in orders %}
+        <div class="order-card">
+            <span class="oc-id">#{{ order.id }}</span>
+            <span class="oc-name">{{ order.full_name }}</span>
+            <span class="oc-total">${{ order.total_price }}</span>
+            <div class="oc-meta">
+                <span class="badge
+                    {% if order.status == 'completed' %}badge-completed
+                    {% elif order.status == 'cancelled' %}badge-cancelled
+                    {% else %}badge-pending{% endif %}">
+                    {{ order.status }}
+                </span>
+                <span class="badge
+                    {% if order.payment_status == 'paid' %}badge-paid
+                    {% else %}badge-unpaid{% endif %}">
+                    {{ order.payment_status }}
+                </span>
+            </div>
+            <span class="oc-date">{{ order.created_at|date:"M d, Y" }}</span>
+            <div class="oc-action">
+                <a href="{% url 'dashboard_order_detail' order.id %}" class="btn-view">View order</a>
+            </div>
+        </div>
+        {% empty %}
+        <p style="text-align: center; color: var(--medium); padding: 2rem 0;">No orders found.</p>
+        {% endfor %}
+    </div>
+
+</section>
+
+{% endblock %}

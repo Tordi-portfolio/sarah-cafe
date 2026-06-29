@@ -1,0 +1,238 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+
+<div class="admin-page">
+
+    <!-- Top bar -->
+    <div class="admin-topbar">
+        <div>
+            <p class="admin-eyebrow">Admin Panel</p>
+            <h1 class="admin-title">Dashboard</h1>
+        </div>
+        <div class="admin-topbar-actions">
+            <a href="{% url 'add_product' %}" class="btn-primary btn-sm">+ Add Product</a>
+        </div>
+    </div>
+    
+    <!-- Stat cards -->
+    <div class="admin-stats">
+        <div class="admin-stat-card">
+            <div class="stat-icon-wrap blue">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+            </div>
+            <div class="stat-info">
+                <span class="stat-num">{{ total_products }}</span>
+                <span class="stat-label">Products</span>
+            </div>
+            <a href="{% url 'dashboard_products' %}" class="stat-link">Manage →</a>
+        </div>
+
+        <div class="admin-stat-card">
+            <div class="stat-icon-wrap caramel">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+            </div>
+            <div class="stat-info">
+                <span class="stat-num">{{ total_orders }}</span>
+                <span class="stat-label">Total Orders</span>
+            </div>
+            <a href="#" class="stat-link">View →</a>
+        </div>
+
+        <div class="admin-stat-card">
+            <div class="stat-icon-wrap green">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+            </div>
+            <div class="stat-info">
+                <span class="stat-num">{{ total_customers }}</span>
+                <span class="stat-label">Customers</span>
+            </div>
+            <a href="#" class="stat-link">View →</a>
+        </div>
+
+        <div class="admin-stat-card featured-stat-card">
+            <div class="stat-icon-wrap amber">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div class="stat-info">
+                <span class="stat-num">{{ pending_orders }}</span>
+                <span class="stat-label">Pending Orders</span>
+            </div>
+            <a href="#" class="stat-link">Review →</a>
+        </div>
+    </div>
+
+    <!-- Quick links -->
+    <div class="admin-quick">
+        <a href="{% url 'dashboard_products' %}" class="stat-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            <span>Manage Products</span>
+        </a>
+        <a href="{% url 'add_product' %}" class="quick-card">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            <span>Add Product</span>
+        </a>
+        <a href="{% url 'dashboard_orders' %}" class="quick-card">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            <span>View Orders</span>
+        </a>
+        <a href="#" class="quick-card">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span>Customers</span>
+        </a>
+    </div>
+
+</div>
+
+<style>
+    .admin-page {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 3.5rem 2rem 6rem;
+    }
+
+    /* ── Top bar ── */
+    .admin-topbar {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 2.75rem;
+    }
+
+    .admin-eyebrow {
+        font-size: .72rem;
+        letter-spacing: .14em;
+        text-transform: uppercase;
+        color: var(--caramel);
+        margin-bottom: .45rem;
+    }
+
+    .admin-title {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(2rem, 5vw, 3rem);
+        font-weight: 700;
+        color: var(--cream);
+        line-height: 1.1;
+    }
+
+    .btn-sm {
+        padding: .6rem 1.25rem;
+        font-size: .8rem;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+    }
+
+    /* ── Stat cards ── */
+    .admin-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+        gap: 1.25rem;
+        margin-bottom: 2rem;
+    }
+
+    .admin-stat-card {
+        background: var(--roast);
+        border: 1px solid rgba(200,134,74,.15);
+        border-radius: 16px;
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        transition: border-color .2s, transform .2s;
+    }
+
+    .admin-stat-card:hover { border-color: rgba(200,134,74,.4); transform: translateY(-2px); }
+
+    .admin-stat-card.featured-stat-card { border-color: rgba(200,134,74,.35); }
+
+    .stat-icon-wrap {
+        width: 46px;
+        height: 46px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .stat-icon-wrap.caramel { background: rgba(200,134,74,.15); color: var(--caramel); }
+    .stat-icon-wrap.blue    { background: rgba(100,150,220,.12); color: #7ab0e8; }
+    .stat-icon-wrap.green   { background: rgba(100,190,120,.1);  color: #78c87a; }
+    .stat-icon-wrap.amber   { background: rgba(230,170,60,.12);  color: #e8b84a; }
+
+    .stat-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: .15rem;
+        min-width: 0;
+    }
+
+    .stat-num {
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--caramel);
+        line-height: 1;
+    }
+
+    .stat-label {
+        font-size: .75rem;
+        letter-spacing: .07em;
+        text-transform: uppercase;
+        color: var(--medium);
+    }
+
+    .stat-link {
+        font-size: .72rem;
+        color: var(--medium);
+        text-decoration: none;
+        letter-spacing: .04em;
+        flex-shrink: 0;
+        transition: color .2s;
+    }
+
+    .stat-link:hover { color: var(--caramel); }
+
+    /* ── Quick links ── */
+    .admin-quick {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-top: .75rem;
+    }
+
+    .quick-card {
+        background: rgba(61,35,20,.5);
+        border: 1px solid rgba(200,134,74,.12);
+        border-radius: 14px;
+        padding: 1.5rem 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: .85rem;
+        text-decoration: none;
+        color: var(--cream-dim);
+        font-size: .9rem;
+        font-weight: 500;
+        transition: background .2s, border-color .2s, color .2s;
+    }
+
+    .quick-card svg { color: var(--caramel); flex-shrink: 0; }
+
+    .quick-card:hover {
+        background: rgba(200,134,74,.1);
+        border-color: rgba(200,134,74,.35);
+        color: var(--cream);
+    }
+
+    @media (max-width: 600px) {
+        .admin-page { padding: 2.5rem 1.25rem 4rem; }
+        .admin-stats { grid-template-columns: 1fr 1fr; }
+        .admin-quick { grid-template-columns: 1fr 1fr; }
+    }
+</style>
+
+{% endblock %}

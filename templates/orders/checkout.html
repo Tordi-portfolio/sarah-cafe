@@ -1,0 +1,830 @@
+{% extends 'base.html' %}
+{% block title %}Checkout{% endblock %}
+{% block content %}
+
+<div class="checkout-page">
+
+    <!-- Header -->
+    <div class="checkout-header">
+        <p class="co-eyebrow">Almost there</p>
+        <h1 id="co-heading">Checkout.</h1>
+    </div>
+
+    <!-- Step indicator -->
+    <div class="steps" id="step-indicator">
+        <div class="step active" id="si-1">
+            <span class="step-num">1</span>
+            <span class="step-label">Shipping</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step muted" id="si-2">
+            <span class="step-num">2</span>
+            <span class="step-label">Payment</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step muted" id="si-3">
+            <span class="step-num">3</span>
+            <span class="step-label">Confirm</span>
+        </div>
+    </div>
+
+    <div class="checkout-layout">
+
+        <!-- LEFT column -->
+        <div class="checkout-form-col">
+
+            <!-- ── STEP 1: Shipping form ── -->
+            <div class="form-card" id="step-shipping">
+                <p class="form-card-eyebrow">Step 1 of 3</p>
+                <h2 class="form-card-title">Shipping Information</h2>
+
+                <form method="POST" novalidate id="shipping-form">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn-primary btn-place">
+                        Continue to Payment
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </button>
+                </form>
+            </div>
+
+            <!-- ── STEP 2: Bank payment details ── -->
+            <div class="form-card hidden" id="step-payment">
+                <p class="form-card-eyebrow">Step 2 of 3</p>
+                <h2 class="form-card-title">Bank Transfer Details</h2>
+
+                <p class="payment-instruction">
+                    Send the exact amount below to the bank account shown. Use your
+                    <strong>order number as the payment reference</strong> so we can
+                    match your transfer quickly.
+                </p>
+
+                <div class="bank-details-card">
+                    <div class="bank-logo-row">
+                        <div class="bank-icon">🏦</div>
+                        <div>
+                            <div class="bank-name-label">Bank</div>
+                            <div class="bank-name-value">Chase Bank (JPMorgan Chase)</div>
+                        </div>
+                    </div>
+
+                    <div class="bank-fields">
+
+                        <div class="bank-field">
+                            <span class="bf-label">Account name</span>
+                            <div class="bf-value-row">
+                                <span class="bf-value" id="v-acct-name">Sarah Adeyemi</span>
+                                <button class="copy-btn" onclick="copyField('v-acct-name', this)" aria-label="Copy account name">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                                    Copy
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="bank-field">
+                            <span class="bf-label">Account number</span>
+                            <div class="bf-value-row">
+                                <span class="bf-value" id="v-acct-num">1234567890</span>
+                                <button class="copy-btn" onclick="copyField('v-acct-num', this)" aria-label="Copy account number">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                                    Copy
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="bank-field">
+                            <span class="bf-label">Routing number (ABA)</span>
+                            <div class="bf-value-row">
+                                <span class="bf-value" id="v-routing">021000021</span>
+                                <button class="copy-btn" onclick="copyField('v-routing', this)" aria-label="Copy routing number">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                                    Copy
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="bank-field">
+                            <span class="bf-label">Account type</span>
+                            <div class="bf-value-row">
+                                <span class="bf-value">Checking</span>
+                            </div>
+                        </div>
+
+                        <div class="bank-field">
+                            <span class="bf-label">Bank address</span>
+                            <div class="bf-value-row">
+                                <span class="bf-value" style="font-size:.88rem; line-height:1.5;">270 Park Avenue, New York, NY 10017, United States</span>
+                            </div>
+                        </div>
+
+                        <div class="bank-field highlight-field">
+                            <span class="bf-label">Amount to send</span>
+                            <div class="bf-value-row">
+                                <span class="bf-value bf-amount">${{ cart.total }}</span>
+                                <button class="copy-btn" onclick="copyText('{{ cart.total }}', this)" aria-label="Copy amount">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                                    Copy
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="bank-field">
+                            <span class="bf-label">Payment reference</span>
+                            <div class="bf-value-row">
+                                <span class="bf-value" id="v-ref">{{ order.id|default:"Your order number" }}</span>
+                                <button class="copy-btn" onclick="copyField('v-ref', this)" aria-label="Copy reference">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                                    Copy
+                                </button>
+                            </div>
+                        </div>
+
+                    </div><!-- /bank-fields -->
+                </div><!-- /bank-details-card -->
+
+                <div class="payment-note">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    <span>Transfers typically arrive within 1–3 business days. Your order will be processed once payment is confirmed.</span>
+                </div>
+
+                <button class="btn-primary btn-place" onclick="goToStep3()">
+                    I've made the payment
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </button>
+            </div>
+
+            <!-- ── STEP 3: Confirmation ── -->
+            <div class="form-card hidden" id="step-confirm">
+
+                <!-- Success icon + heading side by side -->
+                <div class="success-banner">
+                    <div class="confirm-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    </div>
+                    <div>
+                        <p class="form-card-eyebrow" style="margin-bottom:.25rem;">Step 3 of 3</p>
+                        <h2 class="form-card-title" style="margin-bottom:0;">Order placed!</h2>
+                    </div>
+                </div>
+
+                <p class="confirm-body">
+                    Thank you for shopping with Sarah Coffee. We'll verify your bank transfer
+                    within 1–3 business days and get your order on its way.
+                </p>
+
+                <!-- Populated by goToStep3() -->
+                <div class="confirm-details">
+                    <div class="confirm-detail-row">
+                        <span class="cd-label">Order reference</span>
+                        <span class="cd-value" id="confirm-order-id">—</span>
+                    </div>
+                    <div class="confirm-detail-row">
+                        <span class="cd-label">Amount to transfer</span>
+                        <span class="cd-value" id="confirm-total">—</span>
+                    </div>
+                    <div class="confirm-detail-row">
+                        <span class="cd-label">Status</span>
+                        <span class="cd-value">
+                            <span class="status-pill">Awaiting verification</span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- WhatsApp notification -->
+                <div class="whatsapp-card">
+                    <div class="wa-header">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zm-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884zm8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                        <span>Let us know you've paid</span>
+                    </div>
+                    <p class="wa-body">
+                        Send a quick message to the admin with your order reference and attach
+                        your payment receipt — it speeds up verification.
+                    </p>
+                    <a class="wa-btn" id="wa-link" href="#" target="_blank" rel="noopener">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zm-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884zm8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                        Message admin on WhatsApp
+                    </a>
+                </div>
+
+                <a href="{% url 'home' %}" class="btn-ghost" style="margin-top:.5rem;">Continue shopping</a>
+            </div>
+
+        </div><!-- /checkout-form-col -->
+
+        <!-- RIGHT: Order summary (visible on all steps) -->
+        <aside class="checkout-summary">
+            <p class="summary-eyebrow">Your Order</p>
+
+            <div class="co-items">
+                {% for item in cart.items.all %}
+                <div class="co-item">
+                    {% if item.product.image %}
+                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="co-item-img">
+                    {% else %}
+                        <div class="co-item-img co-item-placeholder">☕</div>
+                    {% endif %}
+                    <div class="co-item-info">
+                        <span class="co-item-name">{{ item.product.name }}</span>
+                        <span class="co-item-origin">{{ item.product.origin }}</span>
+                    </div>
+                    <div class="co-item-right">
+                        <span class="co-item-qty">× {{ item.quantity }}</span>
+                        <span class="co-item-price">${{ item.subtotal }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="co-summary-divider"></div>
+
+            <div class="co-total-row">
+                <span>Order Total</span>
+                <span class="co-total">${{ cart.total }}</span>
+            </div>
+
+            <div class="trust-badges">
+                <div class="trust-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                    <span>Free shipping over $50</span>
+                </div>
+                <div class="trust-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    <span>Secure &amp; encrypted checkout</span>
+                </div>
+                <div class="trust-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                    <span>30-day freshness guarantee</span>
+                </div>
+            </div>
+        </aside>
+
+    </div><!-- /checkout-layout -->
+</div>
+
+<style>
+    .checkout-page {
+        max-width: 1040px;
+        margin: 0 auto;
+        padding: 4rem 2rem 6rem;
+    }
+
+    .hidden { display: none !important; }
+
+    /* ── Header ── */
+    .checkout-header { margin-bottom: 1.75rem; }
+
+    .co-eyebrow {
+        font-size: .72rem;
+        letter-spacing: .14em;
+        text-transform: uppercase;
+        color: var(--caramel);
+        margin-bottom: .5rem;
+    }
+
+    .checkout-header h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(2.25rem, 5vw, 3.5rem);
+        font-weight: 700;
+        color: var(--cream);
+        line-height: 1.1;
+    }
+
+    /* ── Steps ── */
+    .steps {
+        display: flex;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .step { display: flex; align-items: center; gap: .55rem; }
+
+    .step-num {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: .78rem;
+        font-weight: 700;
+        background: rgba(200,134,74,.15);
+        color: var(--medium);
+        flex-shrink: 0;
+        transition: background .3s, color .3s;
+    }
+
+    .step.active .step-num { background: var(--caramel); color: var(--espresso); }
+    .step.done .step-num   { background: rgba(106,191,138,.2); color: #6abf8a; }
+
+    .step-label {
+        font-size: .78rem;
+        font-weight: 600;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+        color: var(--medium);
+        transition: color .3s;
+    }
+
+    .step.active .step-label { color: var(--caramel); }
+    .step.done .step-label   { color: #6abf8a; }
+
+    .step-line {
+        flex: 1;
+        height: 1px;
+        background: rgba(200,134,74,.2);
+        margin: 0 .75rem;
+        min-width: 28px;
+    }
+
+    /* ── Layout ── */
+    .checkout-layout {
+        display: grid;
+        grid-template-columns: 1fr 340px;
+        gap: 2.5rem;
+        align-items: start;
+    }
+
+    /* ── Form card ── */
+    .form-card {
+        background: var(--roast);
+        border: 1px solid rgba(200,134,74,.18);
+        border-radius: 16px;
+        padding: 2rem 2rem 2.25rem;
+        transition: opacity .25s;
+    }
+
+    .form-card-eyebrow {
+        font-size: .68rem;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        color: var(--caramel);
+        margin-bottom: .5rem;
+    }
+
+    .form-card-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.6rem;
+        color: var(--cream);
+        margin-bottom: 1.75rem;
+    }
+
+    /* Django as_p inputs */
+    .form-card p                       { margin-bottom: 1.1rem; }
+    .form-card p label                 { display:block; font-size:.78rem; font-weight:500; letter-spacing:.07em; text-transform:uppercase; color:var(--cream-dim); margin-bottom:.45rem; }
+    .form-card p input,
+    .form-card p select,
+    .form-card p textarea              { width:100%; background:rgba(26,15,10,.5); border:1px solid rgba(200,134,74,.22); border-radius:10px; padding:.75rem 1rem; color:var(--cream); font-family:'Inter',sans-serif; font-size:.92rem; outline:none; transition:border-color .2s, box-shadow .2s; }
+    .form-card p input::placeholder,
+    .form-card p textarea::placeholder { color:var(--medium); }
+    .form-card p input:focus,
+    .form-card p select:focus,
+    .form-card p textarea:focus        { border-color:var(--caramel); box-shadow:0 0 0 3px rgba(200,134,74,.12); }
+    .form-card p select                { appearance:none; cursor:pointer; }
+    .form-card p textarea              { resize:vertical; min-height:90px; }
+    .form-card ul                      { list-style:none; font-size:.75rem; color:#d9786a; margin-top:.3rem; }
+
+    /* ── Payment step ── */
+    .payment-instruction {
+        font-size: .9rem;
+        color: var(--cream-dim);
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+    }
+
+    .payment-instruction strong { color: var(--cream); font-weight: 600; }
+
+    .bank-details-card {
+        background: rgba(26,15,10,.5);
+        border: 1px solid rgba(200,134,74,.22);
+        border-radius: 12px;
+        overflow: hidden;
+        margin-bottom: 1.25rem;
+    }
+
+    .bank-logo-row {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid rgba(200,134,74,.12);
+        background: rgba(200,134,74,.06);
+    }
+
+    .bank-icon { font-size: 1.6rem; }
+
+    .bank-name-label { font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; color: var(--medium); margin-bottom: .15rem; }
+    .bank-name-value { font-size: .95rem; font-weight: 600; color: var(--cream); }
+
+    .bank-fields { padding: .5rem 0; }
+
+    .bank-field {
+        padding: .75rem 1.25rem;
+        border-bottom: 1px solid rgba(200,134,74,.07);
+    }
+
+    .bank-field:last-child { border-bottom: none; }
+
+    .bank-field.highlight-field { background: rgba(200,134,74,.06); }
+
+    .bf-label {
+        display: block;
+        font-size: .68rem;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+        color: var(--medium);
+        margin-bottom: .3rem;
+    }
+
+    .bf-value-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: .75rem;
+    }
+
+    .bf-value {
+        font-size: .92rem;
+        color: var(--cream);
+        font-weight: 500;
+        font-family: 'Inter', monospace;
+    }
+
+    .bf-amount {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: var(--caramel);
+    }
+
+    .copy-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: .35rem;
+        padding: .28rem .65rem;
+        font-size: .72rem;
+        font-family: 'Inter', sans-serif;
+        font-weight: 500;
+        color: var(--caramel);
+        background: rgba(200,134,74,.12);
+        border: 1px solid rgba(200,134,74,.3);
+        border-radius: 6px;
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: background .2s, color .2s;
+        white-space: nowrap;
+    }
+
+    .copy-btn:hover { background: var(--caramel); color: var(--espresso); }
+    .copy-btn.copied { background: rgba(106,191,138,.15); color: #6abf8a; border-color: rgba(106,191,138,.35); }
+
+    .payment-note {
+        display: flex;
+        align-items: flex-start;
+        gap: .6rem;
+        font-size: .78rem;
+        color: var(--medium);
+        background: rgba(200,134,74,.06);
+        border: 1px solid rgba(200,134,74,.15);
+        border-radius: 8px;
+        padding: .85rem 1rem;
+        margin-bottom: 1.5rem;
+        line-height: 1.55;
+    }
+
+    .payment-note svg { color: var(--caramel); flex-shrink: 0; margin-top: .1rem; }
+
+    /* ── Confirm step ── */
+    .success-banner {
+        display: flex;
+        align-items: center;
+        gap: 1.1rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .confirm-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: rgba(106,191,138,.12);
+        border: 1px solid rgba(106,191,138,.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6abf8a;
+        flex-shrink: 0;
+    }
+
+    .confirm-body {
+        font-size: .9rem;
+        color: var(--cream-dim);
+        line-height: 1.7;
+        margin-bottom: 1.25rem;
+    }
+
+    .confirm-details {
+        border: 1px solid rgba(200,134,74,.12);
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+    }
+
+    .confirm-detail-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: .75rem 1rem;
+        border-bottom: 1px solid rgba(200,134,74,.08);
+        font-size: .88rem;
+    }
+
+    .confirm-detail-row:last-child { border-bottom: none; }
+
+    .cd-label { color: var(--medium); }
+    .cd-value { color: var(--cream); font-weight: 600; }
+
+    .status-pill {
+        display: inline-block;
+        font-size: .72rem;
+        letter-spacing: .05em;
+        padding: .28rem .75rem;
+        border-radius: 50px;
+        background: rgba(232,168,90,.12);
+        color: var(--gold);
+        border: 1px solid rgba(232,168,90,.3);
+    }
+
+    .whatsapp-card {
+        margin-top: 1.5rem;
+        background: rgba(37,211,102,.05);
+        border: 1px solid rgba(37,211,102,.22);
+        border-radius: 12px;
+        padding: 1.25rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .wa-header {
+        display: flex;
+        align-items: center;
+        gap: .65rem;
+        color: #25D366;
+        font-weight: 600;
+        font-size: .95rem;
+        margin-bottom: .6rem;
+    }
+
+    .wa-body {
+        font-size: .82rem;
+        color: var(--cream-dim);
+        line-height: 1.55;
+        margin-bottom: 1rem;
+    }
+
+    .wa-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: .5rem;
+        background: #25D366;
+        color: #0a2e14;
+        font-weight: 700;
+        font-size: .85rem;
+        padding: .7rem 1.3rem;
+        border-radius: 50px;
+        transition: background .2s, transform .15s;
+    }
+
+    .wa-btn:hover { background: #1fbc58; transform: translateY(-1px); }
+
+    .btn-ghost {
+        display: inline-block;
+        color: var(--caramel);
+        font-size: .85rem;
+        font-weight: 500;
+        border: 1px solid rgba(200,134,74,.3);
+        border-radius: 50px;
+        padding: .65rem 1.25rem;
+        transition: background .2s;
+    }
+
+    .btn-ghost:hover { background: rgba(200,134,74,.1); }
+
+    /* ── Shared button ── */
+    .btn-primary {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: .55rem;
+        width: 100%;
+        background: var(--caramel);
+        color: var(--espresso);
+        border: none;
+        border-radius: 50px;
+        padding: .95rem 1.5rem;
+        font-family: 'Inter', sans-serif;
+        font-size: .95rem;
+        font-weight: 700;
+        letter-spacing: .04em;
+        cursor: pointer;
+        transition: background .2s, transform .15s;
+        margin-top: .75rem;
+        text-decoration: none;
+    }
+
+    .btn-primary:hover { background: var(--gold); transform: translateY(-2px); }
+
+    /* ── Summary sidebar ── */
+    .checkout-summary {
+        background: var(--roast);
+        border: 1px solid rgba(200,134,74,.2);
+        border-radius: 16px;
+        padding: 1.75rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        position: sticky;
+        top: 88px;
+    }
+
+    .summary-eyebrow { font-size:.7rem; letter-spacing:.13em; text-transform:uppercase; color:var(--caramel); }
+
+    .co-items { display:flex; flex-direction:column; gap:.85rem; }
+
+    .co-item { display:flex; align-items:center; gap:.85rem; }
+
+    .co-item-img { width:48px; height:48px; border-radius:9px; object-fit:cover; border:1px solid rgba(200,134,74,.15); flex-shrink:0; }
+
+    .co-item-placeholder { display:flex; align-items:center; justify-content:center; background:rgba(26,15,10,.5); font-size:1.3rem; opacity:.35; }
+
+    .co-item-info { flex:1; min-width:0; display:flex; flex-direction:column; gap:.15rem; }
+    .co-item-name { font-size:.88rem; font-weight:600; color:var(--cream); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .co-item-origin { font-size:.72rem; color:var(--medium); }
+
+    .co-item-right { display:flex; flex-direction:column; align-items:flex-end; gap:.1rem; flex-shrink:0; }
+    .co-item-qty { font-size:.72rem; color:var(--medium); }
+    .co-item-price { font-family:'Playfair Display',serif; font-size:.95rem; font-weight:700; color:var(--caramel); }
+
+    .co-summary-divider { height:1px; background:rgba(200,134,74,.15); }
+
+    .co-total-row { display:flex; justify-content:space-between; align-items:center; font-size:.88rem; color:var(--cream-dim); font-weight:500; }
+
+    .co-total { font-family:'Playfair Display',serif; font-size:1.65rem; font-weight:700; color:var(--caramel); }
+
+    .trust-badges { border-top:1px solid rgba(200,134,74,.1); padding-top:1rem; display:flex; flex-direction:column; gap:.6rem; }
+    .trust-item { display:flex; align-items:center; gap:.6rem; font-size:.76rem; color:var(--medium); }
+    .trust-item svg { color:var(--caramel); flex-shrink:0; }
+
+    /* ── Responsive ── */
+    @media (max-width: 820px) {
+        .checkout-layout {
+            grid-template-columns: 1fr;
+        }
+        .checkout-summary {
+            position: static;
+            order: -1;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .checkout-page { padding: 2rem 1.1rem 4rem; }
+        .step-label { display: none; }
+        .form-card { padding: 1.35rem 1.1rem 1.5rem; }
+        .bank-field { padding: .7rem 1rem; }
+    }
+</style>
+
+<script>
+    const ADMIN_WA = '2347068848255';
+
+    /* ── Step switcher ── */
+    function setStep(n) {
+        ['step-shipping', 'step-payment', 'step-confirm'].forEach((id, i) => {
+            const el = document.getElementById(id);
+            if (el) el.classList.toggle('hidden', i !== n - 1);
+        });
+        [1, 2, 3].forEach(i => {
+            const si = document.getElementById('si-' + i);
+            if (!si) return;
+            si.classList.remove('active', 'done', 'muted');
+            if (i < n)        si.classList.add('done');
+            else if (i === n) si.classList.add('active');
+            else              si.classList.add('muted');
+        });
+        const headings = ['Checkout.', 'Send Payment.', "You're all set."];
+        document.getElementById('co-heading').textContent = headings[n - 1];
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    /* ── Intercept shipping form — POST via fetch, show Step 2 on success ── */
+    document.getElementById('shipping-form').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const btn  = this.querySelector('button[type="submit"]');
+        const orig = btn.innerHTML;
+        btn.disabled  = true;
+        btn.innerHTML = 'Saving…';
+
+        /* Remove any previous inline errors */
+        this.querySelectorAll('.ajax-error').forEach(el => el.remove());
+
+        try {
+            const res = await fetch(window.location.pathname, {
+                method:  'POST',
+                body:    new FormData(this),
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            });
+
+            /*
+             * Your Django view should return:
+             *   - JSON {"ok": true, "order_id": 42}   → success → show Step 2
+             *   - JSON {"ok": false, "errors": {...}}  → show field errors inline
+             *   - anything else (redirect HTML)        → fall back to full page load
+             *
+             * If you haven't changed the view yet, see the note below.
+             */
+            const contentType = res.headers.get('content-type') || '';
+
+            if (contentType.includes('application/json')) {
+                const data = await res.json();
+
+                if (data.ok) {
+                    /* Inject the real order id into the payment and confirm panels */
+                    const refEl = document.getElementById('v-ref');
+                    if (refEl && data.order_id) refEl.textContent = '#' + data.order_id;
+
+                    setStep(2);
+                } else if (data.errors) {
+                    /* Render field errors returned by the view */
+                    Object.entries(data.errors).forEach(([field, msgs]) => {
+                        const input = this.querySelector('[name="' + field + '"]');
+                        if (!input) return;
+                        const errEl = document.createElement('ul');
+                        errEl.className = 'ajax-error';
+                        errEl.style.cssText = 'list-style:none;font-size:.75rem;color:#d9786a;margin-top:.3rem;';
+                        msgs.forEach(m => {
+                            const li = document.createElement('li');
+                            li.textContent = m;
+                            errEl.appendChild(li);
+                        });
+                        input.insertAdjacentElement('afterend', errEl);
+                    });
+                    btn.disabled  = false;
+                    btn.innerHTML = orig;
+                }
+            } else {
+                /*
+                 * View returned a redirect / plain HTML — the order was saved but
+                 * the view isn't AJAX-aware yet. We still show Step 2 because the
+                 * order exists; the order id just won't be filled in.
+                 */
+                if (res.ok || res.redirected) {
+                    setStep(2);
+                } else {
+                    /* Likely a 200 with form errors re-rendered — reload so Django shows them */
+                    window.location.reload();
+                }
+            }
+        } catch (err) {
+            console.error(err);
+            btn.disabled  = false;
+            btn.innerHTML = orig;
+            alert('Something went wrong. Please check your connection and try again.');
+        }
+    }.bind(document.getElementById('shipping-form')));
+
+    /* ── Step 3: populate confirm panel, build WhatsApp link, switch ── */
+    function goToStep3() {
+        const ref   = (document.getElementById('v-ref') || {}).textContent || '';
+        const total = '{{ cart.total }}';
+
+        /* Write values into the confirm detail rows */
+        const orderIdEl = document.getElementById('confirm-order-id');
+        const totalEl   = document.getElementById('confirm-total');
+        if (orderIdEl) orderIdEl.textContent = ref.trim() || '—';
+        if (totalEl)   totalEl.textContent   = '$' + total;
+
+        /* Build pre-filled WhatsApp message */
+        const msg = encodeURIComponent(
+            'Hello Sarah Coffee! I have made the bank transfer for my order.\n\n' +
+            'Order reference: ' + ref.trim() + '\n' +
+            'Amount sent: $' + total + '\n\n' +
+            'Please verify my payment. Thank you!'
+        );
+        document.getElementById('wa-link').href = 'https://wa.me/' + ADMIN_WA + '?text=' + msg;
+        setStep(3);
+    }
+
+    /* ── Copy helpers ── */
+    function copyField(id, btn) {
+        copyText((document.getElementById(id) || {}).textContent || '', btn);
+    }
+
+    function copyText(text, btn) {
+        navigator.clipboard.writeText(text.trim()).then(() => {
+            const orig = btn.innerHTML;
+            btn.classList.add('copied');
+            btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
+            setTimeout(() => { btn.classList.remove('copied'); btn.innerHTML = orig; }, 2000);
+        });
+    }
+</script>
+
+{% endblock %}

@@ -1,0 +1,369 @@
+{% extends 'base.html' %}
+{% block title %}Order #{{ order.id }}{% endblock %}
+{% block content %}
+
+<div class="admin-page">
+
+    <!-- Top bar -->
+    <div class="admin-topbar">
+        <div>
+            <p class="admin-eyebrow">Admin · Orders</p>
+            <h1 class="admin-title">Order <em>#{{ order.id }}</em></h1>
+        </div>
+        <a href="#" class="back-link">← All Orders</a>
+    </div>
+
+    <div class="order-layout">
+
+        <!-- LEFT: Items + totals -->
+        <div class="order-main">
+
+            <!-- Ordered items table -->
+            <div class="order-card">
+                <p class="order-card-eyebrow">Ordered Coffee</p>
+                <div class="order-items-table-wrap">
+                    <table class="order-items-table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Qty</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order.items.all %}
+                            <tr>
+                                <td class="item-name-cell">{{ item.product.name }}</td>
+                                <td class="num-cell">${{ item.price }}</td>
+                                <td class="num-cell">× {{ item.quantity }}</td>
+                                <td class="num-cell subtotal-cell">${{ item.subtotal }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="order-total-row">
+                    <span class="order-total-label">Order Total</span>
+                    <span class="order-total-val">${{ order.total_price }}</span>
+                </div>
+            </div>
+
+            <!-- Customer info -->
+            <div class="order-card">
+                <p class="order-card-eyebrow">Customer Information</p>
+                <div class="customer-grid">
+                    <div class="cust-field">
+                        <span class="cust-label">Full Name</span>
+                        <span class="cust-val">{{ order.full_name }}</span>
+                    </div>
+                    <div class="cust-field">
+                        <span class="cust-label">Email</span>
+                        <span class="cust-val">{{ order.email }}</span>
+                    </div>
+                    <div class="cust-field">
+                        <span class="cust-label">Phone</span>
+                        <span class="cust-val">{{ order.phone }}</span>
+                    </div>
+                    <div class="cust-field cust-full">
+                        <span class="cust-label">Shipping Address</span>
+                        <span class="cust-val">{{ order.address }}</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- RIGHT: Status + actions -->
+        <aside class="order-sidebar">
+
+            <!-- Current status -->
+            <div class="order-card">
+                <p class="order-card-eyebrow">Order Status</p>
+                <div class="current-status-wrap">
+                    <span class="current-status-badge {{ order.status|lower }}">{{ order.status }}</span>
+                </div>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="order-card actions-card">
+                <p class="order-card-eyebrow">Update Status</p>
+                <div class="order-actions">
+                    <a href="{% url 'approve_order' order.id %}" class="order-action-btn approve">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        Approve Order
+                    </a>
+                    <a href="{% url 'deliver_order' order.id %}" class="order-action-btn deliver">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                        Mark as Delivered
+                    </a>
+                    <div class="action-divider"></div>
+                    <a href="{% url 'reject_order' order.id %}" class="order-action-btn reject">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                        Reject Order
+                    </a>
+                    <a href="{% url 'cancel_order' order.id %}" class="order-action-btn cancel">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+                        Cancel Order
+                    </a>
+                </div>
+            </div>
+
+            <!-- Order meta -->
+            <div class="order-card">
+                <p class="order-card-eyebrow">Order Info</p>
+                <div class="order-meta-list">
+                    <div class="meta-row">
+                        <span class="meta-label">Order ID</span>
+                        <span class="meta-val">#{{ order.id }}</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Total</span>
+                        <span class="meta-val caramel-val">${{ order.total_price }}</span>
+                    </div>
+                </div>
+            </div>
+
+        </aside>
+    </div>
+</div>
+
+<style>
+    .admin-page {
+        max-width: 1060px;
+        margin: 0 auto;
+        padding: 3.5rem 2rem 6rem;
+    }
+
+    .admin-topbar {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .admin-eyebrow {
+        font-size: .72rem;
+        letter-spacing: .14em;
+        text-transform: uppercase;
+        color: var(--caramel);
+        margin-bottom: .45rem;
+    }
+
+    .admin-title {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(2rem, 5vw, 3rem);
+        font-weight: 700;
+        color: var(--cream);
+        line-height: 1.1;
+    }
+
+    .admin-title em { color: var(--caramel); font-style: normal; }
+
+    .back-link { font-size: .82rem; color: var(--medium); text-decoration: none; transition: color .2s; }
+    .back-link:hover { color: var(--caramel); }
+
+    /* ── Layout ── */
+    .order-layout {
+        display: grid;
+        grid-template-columns: 1fr 280px;
+        gap: 1.75rem;
+        align-items: start;
+    }
+
+    .order-main { display: flex; flex-direction: column; gap: 1.5rem; }
+
+    /* ── Cards ── */
+    .order-card {
+        background: var(--roast);
+        border: 1px solid rgba(200,134,74,.15);
+        border-radius: 16px;
+        padding: 1.6rem;
+    }
+
+    .order-card-eyebrow {
+        font-size: .68rem;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        color: var(--caramel);
+        margin-bottom: 1.1rem;
+    }
+
+    /* ── Items table ── */
+    .order-items-table-wrap { overflow-x: auto; }
+
+    .order-items-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .order-items-table th {
+        font-size: .68rem;
+        letter-spacing: .09em;
+        text-transform: uppercase;
+        color: var(--medium);
+        font-weight: 500;
+        padding: .6rem .75rem;
+        text-align: left;
+        border-bottom: 1px solid rgba(200,134,74,.12);
+    }
+
+    .order-items-table td {
+        padding: .85rem .75rem;
+        font-size: .88rem;
+        color: var(--cream-dim);
+        border-bottom: 1px solid rgba(200,134,74,.06);
+    }
+
+    .order-items-table tbody tr:last-child td { border-bottom: none; }
+
+    .item-name-cell {
+        font-family: 'Playfair Display', serif;
+        font-size: .95rem !important;
+        color: var(--cream) !important;
+        font-weight: 600;
+    }
+
+    .num-cell { text-align: right; }
+
+    .subtotal-cell {
+        font-family: 'Playfair Display', serif;
+        font-size: 1rem !important;
+        color: var(--caramel) !important;
+        font-weight: 700;
+    }
+
+    .order-total-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 1.1rem;
+        margin-top: .5rem;
+        border-top: 1px solid rgba(200,134,74,.15);
+    }
+
+    .order-total-label {
+        font-size: .78rem;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        color: var(--medium);
+        font-weight: 500;
+    }
+
+    .order-total-val {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--caramel);
+    }
+
+    /* ── Customer grid ── */
+    .customer-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .cust-full { grid-column: 1 / -1; }
+
+    .cust-field { display: flex; flex-direction: column; gap: .2rem; }
+
+    .cust-label {
+        font-size: .67rem;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+        color: var(--medium);
+    }
+
+    .cust-val { font-size: .9rem; color: var(--cream); font-weight: 500; }
+
+    /* ── Sidebar ── */
+    .order-sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+        position: sticky;
+        top: 88px;
+    }
+
+    /* Status badge */
+    .current-status-wrap { display: flex; }
+
+    .current-status-badge {
+        font-size: .75rem;
+        font-weight: 700;
+        letter-spacing: .09em;
+        text-transform: uppercase;
+        padding: .45rem 1.1rem;
+        border-radius: 50px;
+    }
+
+    .current-status-badge.pending    { background: rgba(200,134,74,.15); color: var(--caramel); border: 1px solid rgba(200,134,74,.3); }
+    .current-status-badge.approved   { background: rgba(100,190,120,.1);  color: #78c87a; border: 1px solid rgba(100,190,120,.25); }
+    .current-status-badge.delivered  { background: rgba(100,150,220,.1);  color: #7ab0e8; border: 1px solid rgba(100,150,220,.25); }
+    .current-status-badge.rejected,
+    .current-status-badge.cancelled  { background: rgba(200,80,70,.08);   color: #d9786a; border: 1px solid rgba(200,80,70,.2); }
+
+    /* Action buttons */
+    .order-actions { display: flex; flex-direction: column; gap: .55rem; }
+
+    .order-action-btn {
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+        padding: .7rem 1rem;
+        border-radius: 10px;
+        font-size: .8rem;
+        font-weight: 600;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+        text-decoration: none;
+        transition: background .2s;
+    }
+
+    .order-action-btn.approve  { background: rgba(100,190,120,.12); color: #78c87a; border: 1px solid rgba(100,190,120,.2); }
+    .order-action-btn.approve:hover  { background: rgba(100,190,120,.22); }
+
+    .order-action-btn.deliver  { background: rgba(100,150,220,.1); color: #7ab0e8; border: 1px solid rgba(100,150,220,.2); }
+    .order-action-btn.deliver:hover  { background: rgba(100,150,220,.2); }
+
+    .order-action-btn.reject   { background: rgba(200,80,70,.08); color: #d9786a; border: 1px solid rgba(200,80,70,.18); }
+    .order-action-btn.reject:hover   { background: rgba(200,80,70,.16); }
+
+    .order-action-btn.cancel   { background: rgba(200,80,70,.06); color: #c0786a; border: 1px solid rgba(200,80,70,.12); }
+    .order-action-btn.cancel:hover   { background: rgba(200,80,70,.14); }
+
+    .action-divider { height: 1px; background: rgba(200,134,74,.1); margin: .2rem 0; }
+
+    /* Order meta */
+    .order-meta-list { display: flex; flex-direction: column; gap: .7rem; }
+
+    .meta-row { display: flex; justify-content: space-between; align-items: center; }
+
+    .meta-label {
+        font-size: .72rem;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        color: var(--medium);
+    }
+
+    .meta-val { font-size: .88rem; color: var(--cream); font-weight: 500; }
+    .caramel-val { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--caramel); }
+
+    /* ── Responsive ── */
+    @media (max-width: 760px) {
+        .order-layout { grid-template-columns: 1fr; }
+        .order-sidebar { position: static; }
+        .customer-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 480px) {
+        .admin-page { padding: 2.5rem 1.25rem 4rem; }
+        .order-card { padding: 1.25rem; }
+    }
+</style>
+
+{% endblock %}

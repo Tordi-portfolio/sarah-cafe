@@ -1,0 +1,278 @@
+{% extends 'base.html' %}
+{% block title %}My Orders{% endblock %}
+{% block content %}
+
+<div class="orders-page">
+
+    <div class="orders-header">
+        <div>
+            <p class="orders-eyebrow">Sarah Coffee Store</p>
+            <h1 class="orders-title">My <em>Orders.</em></h1>
+            <p class="orders-subtitle">Track all your coffee orders in one place.</p>
+        </div>
+        <a href="{% url 'shop' %}" class="btn-cta-sm">Shop Coffee</a>
+    </div>
+
+    {% if orders %}
+
+    <div class="orders-table-wrapper">
+        <table class="orders-table">
+            <thead>
+                <tr>
+                    <th>Order</th>
+                    <th>Date</th>
+                    <th>Total</th>
+                    <th>Payment</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td class="col-id">
+                        <span class="order-id">#{{ order.id }}</span>
+                    </td>
+
+                    <td class="col-date">{{ order.created_at|date:"M d, Y" }}</td>
+
+                    <td class="col-total">${{ order.total_price }}</td>
+
+                    <td>
+                        {% if order.payment_status == "Paid" %}
+                            <span class="payment-badge paid">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                Paid
+                            </span>
+                        {% else %}
+                            <span class="payment-badge unpaid">{{ order.payment_status }}</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if order.status == "Pending" %}
+                            <span class="status-badge pending">Pending</span>
+                        {% elif order.status == "Approved" %}
+                            <span class="status-badge approved">Approved</span>
+                        {% elif order.status == "Rejected" %}
+                            <span class="status-badge rejected">Rejected</span>
+                        {% elif order.status == "Cancelled" %}
+                            <span class="status-badge cancelled">Cancelled</span>
+                        {% elif order.status == "Delivered" %}
+                            <span class="status-badge delivered">Delivered</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% else %}
+
+    <div class="orders-empty">
+        <div class="orders-empty-icon">☕</div>
+        <h2>No Orders Yet</h2>
+        <p>You haven't ordered any coffee yet. Time to fix that.</p>
+        <a href="{% url 'shop' %}" class="btn-cta-sm">Browse Coffee</a>
+    </div>
+
+    {% endif %}
+
+</div>
+
+<style>
+    .orders-page {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 4rem 2rem 6rem;
+    }
+
+    /* ── Header ── */
+    .orders-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        margin-bottom: 2.75rem;
+    }
+
+    .orders-eyebrow {
+        font-size: .72rem;
+        letter-spacing: .14em;
+        text-transform: uppercase;
+        color: var(--caramel);
+        margin-bottom: .5rem;
+    }
+
+    .orders-title {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(2.25rem, 6vw, 3.5rem);
+        font-weight: 700;
+        color: var(--cream);
+        line-height: 1.1;
+        margin-bottom: .6rem;
+    }
+
+    .orders-title em { color: var(--caramel); font-style: italic; }
+
+    .orders-subtitle {
+        color: var(--cream-dim);
+        font-size: .9rem;
+    }
+
+    .btn-cta-sm {
+        background: var(--caramel);
+        color: var(--espresso);
+        padding: .75rem 1.6rem;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: .82rem;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+        text-decoration: none;
+        white-space: nowrap;
+        transition: background .2s, transform .15s;
+        flex-shrink: 0;
+    }
+
+    .btn-cta-sm:hover { background: var(--gold); transform: translateY(-2px); }
+
+    /* ── Table wrapper ── */
+    .orders-table-wrapper {
+        background: var(--roast);
+        border: 1px solid rgba(200,134,74,.15);
+        border-radius: 16px;
+        overflow: hidden;
+        overflow-x: auto;
+    }
+
+    /* ── Table ── */
+    .orders-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 580px;
+    }
+
+    .orders-table thead tr {
+        background: rgba(26,15,10,.45);
+        border-bottom: 1px solid rgba(200,134,74,.15);
+    }
+
+    .orders-table th {
+        padding: .9rem 1.25rem;
+        font-size: .67rem;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+        color: var(--medium);
+        font-weight: 500;
+        text-align: left;
+        white-space: nowrap;
+    }
+
+    .orders-table tbody tr {
+        border-bottom: 1px solid rgba(200,134,74,.07);
+        transition: background .18s;
+    }
+
+    .orders-table tbody tr:last-child { border-bottom: none; }
+    .orders-table tbody tr:hover { background: rgba(200,134,74,.04); }
+
+    .orders-table td {
+        padding: 1rem 1.25rem;
+        font-size: .875rem;
+        color: var(--cream-dim);
+        vertical-align: middle;
+    }
+
+    /* Order ID */
+    .order-id {
+        font-family: 'Playfair Display', serif;
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--medium);
+    }
+
+    /* Date */
+    .col-date { white-space: nowrap; }
+
+    /* Total */
+    .col-total {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--caramel);
+    }
+
+    /* Payment badge */
+    .payment-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: .3rem;
+        font-size: .68rem;
+        font-weight: 700;
+        letter-spacing: .07em;
+        text-transform: uppercase;
+        padding: .3rem .75rem;
+        border-radius: 50px;
+        white-space: nowrap;
+    }
+
+    .payment-badge.paid   { background: rgba(100,190,120,.12); color: #78c87a; border: 1px solid rgba(100,190,120,.25); }
+    .payment-badge.unpaid { background: rgba(200,80,70,.08);   color: #d9786a; border: 1px solid rgba(200,80,70,.2); }
+
+    /* Status badge */
+    .status-badge {
+        display: inline-block;
+        font-size: .68rem;
+        font-weight: 700;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        padding: .3rem .8rem;
+        border-radius: 50px;
+        white-space: nowrap;
+    }
+
+    .status-badge.pending   { background: rgba(200,134,74,.15); color: var(--caramel); border: 1px solid rgba(200,134,74,.3); }
+    .status-badge.approved  { background: rgba(100,190,120,.1);  color: #78c87a;        border: 1px solid rgba(100,190,120,.25); }
+    .status-badge.delivered { background: rgba(100,150,220,.1);  color: #7ab0e8;        border: 1px solid rgba(100,150,220,.25); }
+    .status-badge.rejected,
+    .status-badge.cancelled { background: rgba(200,80,70,.08);   color: #d9786a;        border: 1px solid rgba(200,80,70,.2); }
+
+    /* ── Empty state ── */
+    .orders-empty {
+        text-align: center;
+        padding: 6rem 2rem;
+        background: var(--roast);
+        border: 1px solid rgba(200,134,74,.12);
+        border-radius: 16px;
+    }
+
+    .orders-empty-icon {
+        font-size: 3.5rem;
+        opacity: .2;
+        margin-bottom: 1.25rem;
+    }
+
+    .orders-empty h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.75rem;
+        color: var(--cream);
+        margin-bottom: .6rem;
+    }
+
+    .orders-empty p {
+        color: var(--medium);
+        font-size: .9rem;
+        margin-bottom: 2rem;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+        .orders-page { padding: 2.5rem 1.25rem 4rem; }
+        .orders-header { flex-direction: column; align-items: flex-start; }
+        .btn-cta-sm { width: 100%; text-align: center; }
+    }
+</style>
+
+{% endblock %}

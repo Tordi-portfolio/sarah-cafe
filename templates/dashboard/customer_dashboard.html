@@ -1,0 +1,491 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<div class="dash-page">
+
+    <!-- Sidebar -->
+    <aside class="dash-sidebar">
+        <div class="sidebar-avatar">
+            <span>{{ user.first_name|first|upper }}{{ user.last_name|first|upper }}</span>
+        </div>
+        <div class="sidebar-user">
+            <p class="sidebar-name">{{ user.first_name }} {{ user.last_name }}</p>
+            <p class="sidebar-email">{{ user.email }}</p>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#" class="sidebar-link active">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                Overview
+            </a>
+            <a href="{% url 'my_orders' %}" class="sidebar-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+                My Orders
+            </a>
+            <a href="#" class="sidebar-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+                Favorites
+            </a>
+            <a href="#" class="sidebar-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 10-16 0"/></svg>
+                Account
+            </a>
+        </nav>
+        <a href="{% url 'logout' %}" class="sidebar-logout">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Sign Out
+        </a>
+    </aside>
+
+    <!-- Main content -->
+    <main class="dash-main">
+
+        <!-- Header -->
+        <div class="dash-header">
+            <div>
+                <p class="dash-eyebrow">Dashboard</p>
+                <h1 class="dash-welcome">Good to see you, <em>{{ user.first_name }}</em>.</h1>
+            </div>
+            <a href="{% url 'shop' %}" class="btn-order">Shop Coffee ☕</a>
+        </div>
+
+        <!-- Stat cards -->
+        <div class="dash-stats">
+            <div class="stat-card">
+                <span class="stat-card-label">Total Orders</span>
+                <span class="stat-card-num">{{ total_orders }}</span>
+                <span class="stat-card-sub">↑ 3 this month</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card-label">Loyalty Points</span>
+                <span class="stat-card-num">coming soon...</span>
+                <span class="stat-card-sub">190 pts to next reward</span>
+            </div>
+            {% for order in recent_orders %}
+
+            <div class="order-row">
+
+                <div class="order-dot"></div>
+
+                <div class="order-info">
+
+                    <span class="order-name">
+
+                        Order #{{ order.id }}
+
+                    </span>
+
+                    <span class="order-date">
+
+                        {{ order.created_at|date:"M d, Y" }}
+
+                    </span>
+
+                </div>
+
+                <span class="order-badge">
+
+                    {{ order.status }}
+
+                </span>
+
+                <span class="order-price">
+
+                    ${{ order.total_price }}
+
+                </span>
+
+            </div>
+
+            {% empty %}
+
+            <p>No orders yet.</p>
+
+            {% endfor %}
+        </div>
+
+        <!-- Recent orders -->
+        <div class="dash-section">
+            <div class="dash-section-head">
+                <h2>Recent Orders</h2>
+                <a href="#">View all →</a>
+            </div>
+            <div class="order-list">
+                <div class="order-row">
+                    <div class="order-dot"></div>
+                    <div class="order-info">
+                        <span class="order-name">Sarah's Gold</span>
+                        <span class="order-date">Jun 24, 2025</span>
+                    </div>
+                    <span class="order-badge ready">Ready</span>
+                    <span class="order-price">$6.25</span>
+                </div>
+                <div class="order-row">
+                    <div class="order-dot"></div>
+                    <div class="order-info">
+                        <span class="order-name">Cortado + Almond Croissant</span>
+                        <span class="order-date">Jun 21, 2025</span>
+                    </div>
+                    <span class="order-badge done">Completed</span>
+                    <span class="order-price">$8.75</span>
+                </div>
+                <div class="order-row">
+                    <div class="order-dot"></div>
+                    <div class="order-info">
+                        <span class="order-name">Ethiopian Yirgacheffe</span>
+                        <span class="order-date">Jun 18, 2025</span>
+                    </div>
+                    <span class="order-badge done">Completed</span>
+                    <span class="order-price">$5.75</span>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<style>
+    /* ── Layout ── */
+    .dash-page {
+        display: grid;
+        grid-template-columns: 240px 1fr;
+        min-height: calc(100vh - 70px);
+    }
+
+    /* ── Sidebar ── */
+    .dash-sidebar {
+        background: var(--roast);
+        border-right: 1px solid rgba(200,134,74,.15);
+        padding: 2.25rem 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        position: sticky;
+        top: 70px;
+        height: calc(100vh - 70px);
+        overflow-y: auto;
+    }
+
+    .sidebar-avatar {
+        width: 52px;
+        height: 52px;
+        background: var(--caramel);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Playfair Display', serif;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--espresso);
+        margin-bottom: 1rem;
+    }
+
+    .sidebar-name {
+        font-weight: 600;
+        color: var(--cream);
+        font-size: .95rem;
+        margin-bottom: .2rem;
+    }
+
+    .sidebar-email {
+        font-size: .75rem;
+        color: var(--medium);
+        margin-bottom: 2rem;
+    }
+
+    .sidebar-nav {
+        display: flex;
+        flex-direction: column;
+        gap: .25rem;
+        flex: 1;
+    }
+
+    .sidebar-link {
+        display: flex;
+        align-items: center;
+        gap: .75rem;
+        padding: .65rem .9rem;
+        border-radius: 8px;
+        font-size: .875rem;
+        color: var(--cream-dim);
+        text-decoration: none;
+        transition: background .2s, color .2s;
+    }
+
+    .sidebar-link:hover, .sidebar-link.active {
+        background: rgba(200,134,74,.12);
+        color: var(--caramel);
+    }
+
+    .sidebar-logout {
+        display: flex;
+        align-items: center;
+        gap: .65rem;
+        padding: .65rem .9rem;
+        border-radius: 8px;
+        font-size: .8rem;
+        color: var(--medium);
+        text-decoration: none;
+        margin-top: auto;
+        transition: color .2s;
+        letter-spacing: .04em;
+    }
+
+    .sidebar-logout:hover { color: #d9786a; }
+
+    /* ── Main ── */
+    .dash-main {
+        padding: 2.75rem 2.5rem;
+        background: var(--espresso);
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .dash-header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .dash-eyebrow {
+        font-size: .72rem;
+        letter-spacing: .14em;
+        text-transform: uppercase;
+        color: var(--caramel);
+        margin-bottom: .4rem;
+    }
+
+    .dash-welcome {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.25rem;
+        font-weight: 700;
+        color: var(--cream);
+        line-height: 1.15;
+    }
+
+    .dash-welcome em {
+        color: var(--caramel);
+        font-style: italic;
+    }
+
+    .btn-order {
+        background: var(--caramel);
+        color: var(--espresso);
+        padding: .75rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: .875rem;
+        letter-spacing: .05em;
+        text-decoration: none;
+        white-space: nowrap;
+        transition: background .2s, transform .15s;
+    }
+
+    .btn-order:hover { background: var(--gold); transform: translateY(-2px); }
+
+    /* ── Stat cards ── */
+    .dash-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+        gap: 1rem;
+    }
+
+    .stat-card {
+        background: var(--roast);
+        border: 1px solid rgba(200,134,74,.15);
+        border-radius: 14px;
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: .4rem;
+        transition: border-color .2s;
+    }
+
+    .stat-card:hover { border-color: rgba(200,134,74,.4); }
+
+    .stat-card.featured-stat {
+        border-color: rgba(200,134,74,.4);
+        background: linear-gradient(135deg, #3D2314, #50301a);
+    }
+
+    .stat-card-label {
+        font-size: .72rem;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+        color: var(--medium);
+    }
+
+    .stat-card-num {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.25rem;
+        font-weight: 700;
+        color: var(--caramel);
+        line-height: 1;
+    }
+
+    .stat-card-sub {
+        font-size: .75rem;
+        color: var(--cream-dim);
+    }
+
+    /* ── Recent orders ── */
+    .dash-section {
+        background: var(--roast);
+        border: 1px solid rgba(200,134,74,.15);
+        border-radius: 14px;
+        padding: 1.75rem;
+    }
+
+    .dash-section-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+    }
+
+    .dash-section-head h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.2rem;
+        color: var(--cream);
+    }
+
+    .dash-section-head a {
+        font-size: .8rem;
+        color: var(--caramel);
+        text-decoration: none;
+    }
+
+    .order-list { display: flex; flex-direction: column; gap: 0; }
+
+    .order-row {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: .9rem 0;
+        border-bottom: 1px solid rgba(200,134,74,.08);
+    }
+
+    .order-row:last-child { border-bottom: none; }
+
+    .order-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--caramel);
+        flex-shrink: 0;
+    }
+
+    .order-info { flex: 1; min-width: 0; }
+
+    .order-name {
+        display: block;
+        font-size: .9rem;
+        color: var(--cream);
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .order-date {
+        font-size: .75rem;
+        color: var(--medium);
+    }
+
+    .order-badge {
+        font-size: .68rem;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        padding: .3rem .7rem;
+        border-radius: 50px;
+        font-weight: 600;
+        flex-shrink: 0;
+    }
+
+    .order-badge.ready  { background: rgba(200,134,74,.2); color: var(--caramel); }
+    .order-badge.done   { background: rgba(120,180,100,.12); color: #90c870; }
+
+    .order-price {
+        font-size: .9rem;
+        font-weight: 600;
+        color: var(--cream-dim);
+        flex-shrink: 0;
+    }
+
+    /* ── Loyalty banner ── */
+    .loyalty-banner {
+        background: linear-gradient(135deg, #3D2314, #502d18);
+        border: 1px solid rgba(200,134,74,.35);
+        border-radius: 14px;
+        padding: 1.75rem 2rem;
+        display: flex;
+        align-items: center;
+        gap: 2.5rem;
+        flex-wrap: wrap;
+    }
+
+    .loyalty-eyebrow {
+        font-size: .7rem;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        color: var(--caramel);
+        margin-bottom: .35rem;
+    }
+
+    .loyalty-headline {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.1rem;
+        color: var(--cream);
+    }
+
+    .loyalty-bar-wrap { flex: 1; min-width: 180px; }
+
+    .loyalty-bar {
+        height: 8px;
+        background: rgba(255,255,255,.08);
+        border-radius: 50px;
+        overflow: hidden;
+        margin-bottom: .5rem;
+    }
+
+    .loyalty-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--caramel), var(--gold));
+        border-radius: 50px;
+        transition: width .8s ease;
+    }
+
+    .loyalty-note {
+        font-size: .75rem;
+        color: var(--cream-dim);
+        text-align: right;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+        .dash-page { grid-template-columns: 1fr; }
+        .dash-sidebar {
+            position: static;
+            height: auto;
+            flex-direction: row;
+            flex-wrap: wrap;
+            padding: 1rem 1.25rem;
+            gap: 1rem;
+            align-items: center;
+        }
+        .sidebar-avatar { margin-bottom: 0; width: 38px; height: 38px; font-size: .9rem; }
+        .sidebar-email, .sidebar-name { margin-bottom: 0; }
+        .sidebar-nav { flex-direction: row; flex-wrap: wrap; gap: .25rem; }
+        .sidebar-logout { margin-top: 0; }
+        .dash-main { padding: 1.5rem 1.25rem; }
+        .loyalty-banner { flex-direction: column; gap: 1.25rem; }
+    }
+</style>
+
+{% endblock %}

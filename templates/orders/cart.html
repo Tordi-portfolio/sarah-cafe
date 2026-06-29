@@ -1,0 +1,372 @@
+{% extends 'base.html' %}
+{% block title %}Shopping Cart{% endblock %}
+{% block content %}
+
+<div class="cart-page">
+
+    <div class="cart-header">
+        <p class="cart-eyebrow">Your Order</p>
+        <h1>Shopping <em>Cart.</em></h1>
+    </div>
+
+    {% if cart.items.all %}
+    <div class="cart-layout">
+
+        <!-- Cart items -->
+        <div class="cart-items">
+
+            <!-- Table header -->
+            <div class="cart-row cart-head">
+                <span class="col-coffee">Coffee</span>
+                <span class="col-price">Price</span>
+                <span class="col-qty">Qty</span>
+                <span class="col-sub">Subtotal</span>
+                <span class="col-remove"></span>
+            </div>
+
+            {% for item in cart.items.all %}
+            <div class="cart-row cart-item">
+
+                <!-- Product -->
+                <div class="col-coffee item-product">
+                    {% if item.product.image %}
+                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="item-thumb">
+                    {% else %}
+                        <div class="item-thumb item-thumb-placeholder">☕</div>
+                    {% endif %}
+                    <div class="item-meta">
+                        <a href="{% url 'product_detail' item.product.slug %}" class="item-name">{{ item.product.name }}</a>
+                        <span class="item-origin">{{ item.product.origin }}</span>
+                    </div>
+                </div>
+
+                <span class="col-price item-price">${{ item.product.price }}</span>
+
+                <span class="col-qty item-qty">{{ item.quantity }}</span>
+
+                <span class="col-sub item-subtotal">${{ item.subtotal }}</span>
+
+                <span class="col-remove">
+                    <a href="{% url 'remove_from_cart' item.id %}" class="remove-btn" title="Remove item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+                    </a>
+                </span>
+            </div>
+            {% endfor %}
+
+        </div>
+
+        <!-- Order summary sidebar -->
+        <aside class="cart-summary">
+            <p class="summary-eyebrow">Order Summary</p>
+
+            <div class="summary-lines">
+                {% for item in cart.items.all %}
+                <div class="summary-line">
+                    <span class="summary-item-name">{{ item.product.name }} × {{ item.quantity }}</span>
+                    <span>${{ item.subtotal }}</span>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="summary-divider"></div>
+
+            <div class="summary-total-row">
+                <span>Total</span>
+                <span class="summary-total">${{ cart.total }}</span>
+            </div>
+
+            <a href="{% url 'checkout' %}" class="btn-primary">Proceed to Checkout</a>
+
+            <a href="{% url 'shop' %}" class="continue-link">← Continue Shopping</a>
+        </aside>
+
+    </div>
+
+    {% else %}
+
+    <!-- Empty cart -->
+    <div class="cart-empty">
+        <div class="cart-empty-icon">☕</div>
+        <h2>Your cart is empty.</h2>
+        <p>Looks like you haven't added any coffee yet.</p>
+        <a href="{% url 'shop' %}" class="btn-primary" style="display:inline-block; width:auto; padding:.85rem 2rem;">Browse Our Collection</a>
+    </div>
+
+    {% endif %}
+
+</div>
+
+<style>
+    .cart-page {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 4rem 2rem 6rem;
+    }
+
+    /* ── Header ── */
+    .cart-header { margin-bottom: 2.75rem; }
+
+    .cart-eyebrow {
+        font-size: .72rem;
+        letter-spacing: .14em;
+        text-transform: uppercase;
+        color: var(--caramel);
+        margin-bottom: .55rem;
+    }
+
+    .cart-header h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(2.25rem, 5vw, 3.5rem);
+        font-weight: 700;
+        color: var(--cream);
+        line-height: 1.1;
+    }
+
+    .cart-header h1 em { color: var(--caramel); font-style: italic; }
+
+    /* ── Layout ── */
+    .cart-layout {
+        display: grid;
+        grid-template-columns: 1fr 320px;
+        gap: 2.5rem;
+        align-items: start;
+    }
+
+    /* ── Cart table ── */
+    .cart-items {
+        background: var(--roast);
+        border: 1px solid rgba(200,134,74,.15);
+        border-radius: 16px;
+        overflow: hidden;
+    }
+
+    .cart-row {
+        display: grid;
+        grid-template-columns: 1fr 90px 60px 100px 40px;
+        align-items: center;
+        padding: 1rem 1.5rem;
+        gap: .75rem;
+    }
+
+    .cart-head {
+        border-bottom: 1px solid rgba(200,134,74,.15);
+        padding: .85rem 1.5rem;
+        background: rgba(26,15,10,.3);
+    }
+
+    .cart-head span {
+        font-size: .68rem;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+        color: var(--medium);
+        font-weight: 500;
+    }
+
+    .cart-item {
+        border-bottom: 1px solid rgba(200,134,74,.08);
+        transition: background .2s;
+    }
+
+    .cart-item:last-child { border-bottom: none; }
+    .cart-item:hover { background: rgba(200,134,74,.04); }
+
+    /* Product cell */
+    .item-product {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        min-width: 0;
+    }
+
+    .item-thumb {
+        width: 56px;
+        height: 56px;
+        border-radius: 10px;
+        object-fit: cover;
+        border: 1px solid rgba(200,134,74,.15);
+        flex-shrink: 0;
+    }
+
+    .item-thumb-placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(26,15,10,.5);
+        font-size: 1.5rem;
+        opacity: .4;
+    }
+
+    .item-meta { min-width: 0; }
+
+    .item-name {
+        display: block;
+        font-family: 'Playfair Display', serif;
+        font-size: 1rem;
+        color: var(--cream);
+        text-decoration: none;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        transition: color .2s;
+    }
+
+    .item-name:hover { color: var(--caramel); }
+
+    .item-origin {
+        font-size: .72rem;
+        color: var(--medium);
+        letter-spacing: .04em;
+    }
+
+    /* Price / qty / subtotal cells */
+    .item-price, .item-qty, .item-subtotal {
+        font-size: .95rem;
+        color: var(--cream-dim);
+        text-align: center;
+    }
+
+    .col-price, .col-qty, .col-sub { text-align: center; }
+
+    .item-subtotal {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.05rem;
+        color: var(--caramel);
+        font-weight: 700;
+    }
+
+    /* Remove button */
+    .remove-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--medium);
+        transition: color .2s;
+        text-decoration: none;
+    }
+
+    .remove-btn:hover { color: #d9786a; }
+
+    /* ── Order summary ── */
+    .cart-summary {
+        background: var(--roast);
+        border: 1px solid rgba(200,134,74,.2);
+        border-radius: 16px;
+        padding: 1.75rem;
+        display: flex;
+        flex-direction: column;
+        gap: .9rem;
+        position: sticky;
+        top: 88px;
+    }
+
+    .summary-eyebrow {
+        font-size: .7rem;
+        letter-spacing: .13em;
+        text-transform: uppercase;
+        color: var(--caramel);
+        margin-bottom: .25rem;
+    }
+
+    .summary-lines {
+        display: flex;
+        flex-direction: column;
+        gap: .6rem;
+    }
+
+    .summary-line {
+        display: flex;
+        justify-content: space-between;
+        font-size: .85rem;
+        color: var(--cream-dim);
+        gap: .5rem;
+    }
+
+    .summary-item-name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        flex: 1;
+    }
+
+    .summary-divider {
+        height: 1px;
+        background: rgba(200,134,74,.15);
+    }
+
+    .summary-total-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: .9rem;
+        color: var(--cream-dim);
+        font-weight: 500;
+    }
+
+    .summary-total {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--caramel);
+    }
+
+    .btn-checkout {
+        width: 100%;
+        margin-top: .25rem;
+        text-align: center;
+        text-decoration: none;
+        display: block;
+    }
+
+    .continue-link {
+        text-align: center;
+        font-size: .8rem;
+        color: var(--medium);
+        text-decoration: none;
+        transition: color .2s;
+    }
+
+    .continue-link:hover { color: var(--caramel); }
+
+    /* ── Empty state ── */
+    .cart-empty {
+        text-align: center;
+        padding: 6rem 2rem;
+    }
+
+    .cart-empty-icon {
+        font-size: 4rem;
+        opacity: .2;
+        margin-bottom: 1.5rem;
+    }
+
+    .cart-empty h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem;
+        color: var(--cream);
+        margin-bottom: .65rem;
+    }
+
+    .cart-empty p {
+        color: var(--medium);
+        font-size: .95rem;
+        margin-bottom: 2rem;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 820px) {
+        .cart-layout { grid-template-columns: 1fr; }
+        .cart-summary { position: static; }
+        .cart-row { grid-template-columns: 1fr 70px 50px 80px 36px; padding: .9rem 1rem; gap: .5rem; }
+    }
+
+    @media (max-width: 520px) {
+        .cart-head .col-price,
+        .cart-head .col-qty { display: none; }
+        .item-price, .item-qty { display: none; }
+        .cart-row { grid-template-columns: 1fr 80px 36px; }
+    }
+</style>
+
+{% endblock %}

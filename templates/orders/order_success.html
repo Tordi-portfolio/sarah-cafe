@@ -1,0 +1,313 @@
+{% extends 'base.html' %}
+{% block title %}Order Confirmed | Sarah Coffee Store{% endblock %}
+{% block content %}
+
+<div class="success-page">
+
+    <!-- Animated checkmark -->
+    <div class="success-icon-wrap" aria-hidden="true">
+        <svg class="success-ring" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <circle class="ring-track" cx="50" cy="50" r="44" fill="none" stroke-width="4"/>
+            <circle class="ring-fill"  cx="50" cy="50" r="44" fill="none" stroke-width="4"/>
+        </svg>
+        <svg class="success-check" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg">
+            <polyline class="check-mark" points="14,27 23,36 38,18" fill="none" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </div>
+
+    <p class="success-eyebrow">Order Confirmed</p>
+
+    <h1 class="success-headline">
+        Your coffee is<br><em>on its way.</em>
+    </h1>
+
+    <p class="success-sub">
+        Thank you for choosing Sarah Coffee Store.<br>
+        You'll receive a confirmation email shortly.
+    </p>
+
+    <!-- Order detail card -->
+    {% if order %}
+    <div class="order-card">
+        <div class="order-card-row">
+            <span class="order-card-label">Order Number</span>
+            <span class="order-card-val">#{{ order.id }}</span>
+        </div>
+        <div class="order-card-divider"></div>
+        <div class="order-card-row">
+            <span class="order-card-label">Date</span>
+            <span class="order-card-val">{{ order.created_at|date:"F j, Y" }}</span>
+        </div>
+        <div class="order-card-divider"></div>
+        <div class="order-card-row">
+            <span class="order-card-label">Total</span>
+            <span class="order-card-val order-total">${{ order.total }}</span>
+        </div>
+        <div class="order-card-divider"></div>
+        <div class="order-card-row">
+            <span class="order-card-label">Status</span>
+            <span class="order-status-badge">Processing</span>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- CTAs -->
+    <div class="success-actions">
+        <a href="{% url 'shop' %}" class="btn-primary btn-shop-again">Continue Shopping</a>
+        {% if order %}
+        <a href="#" class="btn-ghost-sm">View Order Details</a>
+        {% endif %}
+    </div>
+
+    <!-- What's next strip -->
+    <div class="whats-next">
+        <div class="next-step">
+            <span class="next-icon">📧</span>
+            <span class="next-label">Confirmation email sent</span>
+        </div>
+        <div class="next-divider" aria-hidden="true"></div>
+        <div class="next-step">
+            <span class="next-icon">📦</span>
+            <span class="next-label">We roast & pack your order</span>
+        </div>
+        <div class="next-divider" aria-hidden="true"></div>
+        <div class="next-step">
+            <span class="next-icon">🚚</span>
+            <span class="next-label">Ships within 1–2 business days</span>
+        </div>
+        <div class="next-divider" aria-hidden="true"></div>
+        <div class="next-step">
+            <span class="next-icon">☕</span>
+            <span class="next-label">Enjoy your perfect cup</span>
+        </div>
+    </div>
+
+</div>
+
+<style>
+    .success-page {
+        max-width: 560px;
+        margin: 0 auto;
+        padding: 5rem 2rem 7rem;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.25rem;
+    }
+
+    /* ── Animated checkmark ── */
+    .success-icon-wrap {
+        position: relative;
+        width: 100px;
+        height: 100px;
+        margin-bottom: .5rem;
+    }
+
+    .success-ring {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        transform: rotate(-90deg);
+    }
+
+    .ring-track {
+        stroke: rgba(200,134,74,.15);
+    }
+
+    .ring-fill {
+        stroke: var(--caramel);
+        stroke-dasharray: 276.46;
+        stroke-dashoffset: 276.46;
+        animation: drawRing .8s cubic-bezier(.4,0,.2,1) .2s forwards;
+    }
+
+    @keyframes drawRing {
+        to { stroke-dashoffset: 0; }
+    }
+
+    .success-check {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    .check-mark {
+        stroke: var(--caramel);
+        stroke-dasharray: 50;
+        stroke-dashoffset: 50;
+        animation: drawCheck .4s ease .95s forwards;
+    }
+
+    @keyframes drawCheck {
+        to { stroke-dashoffset: 0; }
+    }
+
+    /* ── Text ── */
+    .success-eyebrow {
+        font-size: .72rem;
+        letter-spacing: .16em;
+        text-transform: uppercase;
+        color: var(--caramel);
+        margin-bottom: -.4rem;
+    }
+
+    .success-headline {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(2.25rem, 6vw, 3.5rem);
+        font-weight: 700;
+        color: var(--cream);
+        line-height: 1.1;
+    }
+
+    .success-headline em { color: var(--caramel); font-style: italic; }
+
+    .success-sub {
+        color: var(--cream-dim);
+        font-size: .97rem;
+        line-height: 1.75;
+        margin-bottom: .25rem;
+    }
+
+    /* ── Order card ── */
+    .order-card {
+        background: var(--roast);
+        border: 1px solid rgba(200,134,74,.2);
+        border-radius: 16px;
+        padding: 1.5rem 2rem;
+        width: 100%;
+        text-align: left;
+        animation: fadeUp .5s ease .3s both;
+    }
+
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(12px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .order-card-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: .6rem 0;
+    }
+
+    .order-card-label {
+        font-size: .75rem;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        color: var(--medium);
+    }
+
+    .order-card-val {
+        font-size: .9rem;
+        color: var(--cream);
+        font-weight: 500;
+    }
+
+    .order-total {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--caramel);
+    }
+
+    .order-card-divider {
+        height: 1px;
+        background: rgba(200,134,74,.1);
+    }
+
+    .order-status-badge {
+        font-size: .68rem;
+        font-weight: 700;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+        background: rgba(200,134,74,.15);
+        color: var(--caramel);
+        border: 1px solid rgba(200,134,74,.3);
+        padding: .3rem .85rem;
+        border-radius: 50px;
+    }
+
+    /* ── Actions ── */
+    .success-actions {
+        display: flex;
+        flex-direction: column;
+        gap: .85rem;
+        width: 100%;
+    }
+
+    .btn-shop-again {
+        display: block;
+        text-align: center;
+        text-decoration: none;
+        width: 100%;
+        padding: 1rem;
+        font-size: .92rem;
+    }
+
+    .btn-ghost-sm {
+        font-size: .82rem;
+        color: var(--medium);
+        text-decoration: none;
+        letter-spacing: .04em;
+        transition: color .2s;
+    }
+
+    .btn-ghost-sm:hover { color: var(--caramel); }
+
+    /* ── What's next ── */
+    .whats-next {
+        display: flex;
+        align-items: center;
+        gap: 0;
+        background: var(--roast);
+        border: 1px solid rgba(200,134,74,.12);
+        border-radius: 16px;
+        padding: 1.5rem 1.25rem;
+        width: 100%;
+        flex-wrap: wrap;
+        justify-content: center;
+        row-gap: 1.25rem;
+        animation: fadeUp .5s ease .55s both;
+    }
+
+    .next-step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: .45rem;
+        flex: 1;
+        min-width: 90px;
+    }
+
+    .next-icon { font-size: 1.5rem; }
+
+    .next-label {
+        font-size: .72rem;
+        color: var(--cream-dim);
+        line-height: 1.4;
+        text-align: center;
+        max-width: 90px;
+    }
+
+    .next-divider {
+        width: 1px;
+        height: 36px;
+        background: rgba(200,134,74,.15);
+        flex-shrink: 0;
+        align-self: center;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 480px) {
+        .success-page { padding: 3.5rem 1.25rem 5rem; }
+        .order-card { padding: 1.25rem; }
+        .next-divider { display: none; }
+        .whats-next { gap: 1rem; }
+    }
+</style>
+
+{% endblock %}

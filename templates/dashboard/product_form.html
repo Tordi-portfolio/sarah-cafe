@@ -1,0 +1,285 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+
+<div class="admin-page">
+
+    <div class="admin-topbar">
+        <div>
+            <p class="admin-eyebrow">Admin · Products</p>
+            <h1 class="admin-title">{{ title }}</h1>
+        </div>
+        <a href="{% url 'dashboard_products' %}" class="stat-link">← Back to Products</a>
+    </div>
+
+    <div class="form-layout">
+
+        <!-- Main form -->
+        <div class="product-form-card">
+            <p class="form-card-eyebrow">Product Details</p>
+            <h2 class="form-card-title">{{ title }}</h2>
+
+            <form method="POST" enctype="multipart/form-data" novalidate>
+                {% csrf_token %}
+                {{ form.as_p }}
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary btn-save">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        Save Product
+                    </button>
+                    <a href="{% url 'dashboard_orders' %}" class="stat-link">Cancel</a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Side tips -->
+        <aside class="form-tips">
+            <p class="tips-eyebrow">Tips</p>
+            <div class="tip-item">
+                <span class="tip-icon">📸</span>
+                <div>
+                    <p class="tip-title">Product Image</p>
+                    <p class="tip-body">Use a square image (1:1) at least 800×800px for best results.</p>
+                </div>
+            </div>
+            <div class="tip-item">
+                <span class="tip-icon">✍️</span>
+                <div>
+                    <p class="tip-title">Description</p>
+                    <p class="tip-body">Mention tasting notes, origin story, and brew method for higher conversions.</p>
+                </div>
+            </div>
+            <div class="tip-item">
+                <span class="tip-icon">📦</span>
+                <div>
+                    <p class="tip-title">Stock</p>
+                    <p class="tip-body">Setting stock to 0 will automatically mark the product as unavailable.</p>
+                </div>
+            </div>
+        </aside>
+
+    </div>
+
+</div>
+
+<style>
+    .admin-page {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 3.5rem 2rem 6rem;
+    }
+
+    .admin-topbar {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .admin-eyebrow {
+        font-size: .72rem;
+        letter-spacing: .14em;
+        text-transform: uppercase;
+        color: var(--caramel);
+        margin-bottom: .45rem;
+    }
+
+    .admin-title {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(2rem, 5vw, 3rem);
+        font-weight: 700;
+        color: var(--cream);
+        line-height: 1.1;
+    }
+
+    .back-link {
+        font-size: .82rem;
+        color: var(--medium);
+        text-decoration: none;
+        transition: color .2s;
+    }
+
+    .back-link:hover { color: var(--caramel); }
+
+    /* ── Layout ── */
+    .form-layout {
+        display: grid;
+        grid-template-columns: 1fr 260px;
+        gap: 2rem;
+        align-items: start;
+    }
+
+    /* ── Form card ── */
+    .product-form-card {
+        background: var(--roast);
+        border: 1px solid rgba(200,134,74,.18);
+        border-radius: 16px;
+        padding: 2rem 2.25rem 2.5rem;
+    }
+
+    .form-card-eyebrow {
+        font-size: .68rem;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        color: var(--caramel);
+        margin-bottom: .45rem;
+    }
+
+    .form-card-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.5rem;
+        color: var(--cream);
+        margin-bottom: 1.75rem;
+    }
+
+    /* Django form as_p */
+    .product-form-card p {
+        margin-bottom: 1.15rem;
+    }
+
+    .product-form-card p label {
+        display: block;
+        font-size: .76rem;
+        font-weight: 500;
+        letter-spacing: .07em;
+        text-transform: uppercase;
+        color: var(--cream-dim);
+        margin-bottom: .45rem;
+    }
+
+    .product-form-card p input[type="text"],
+    .product-form-card p input[type="number"],
+    .product-form-card p input[type="email"],
+    .product-form-card p input[type="url"],
+    .product-form-card p select,
+    .product-form-card p textarea {
+        width: 100%;
+        background: rgba(26,15,10,.5);
+        border: 1px solid rgba(200,134,74,.22);
+        border-radius: 10px;
+        padding: .75rem 1rem;
+        color: var(--cream);
+        font-family: 'Inter', sans-serif;
+        font-size: .92rem;
+        outline: none;
+        transition: border-color .2s, box-shadow .2s;
+    }
+
+    .product-form-card p input:focus,
+    .product-form-card p select:focus,
+    .product-form-card p textarea:focus {
+        border-color: var(--caramel);
+        box-shadow: 0 0 0 3px rgba(200,134,74,.12);
+    }
+
+    .product-form-card p input::placeholder,
+    .product-form-card p textarea::placeholder { color: var(--medium); }
+
+    .product-form-card p select { appearance: none; cursor: pointer; }
+
+    .product-form-card p textarea { resize: vertical; min-height: 110px; }
+
+    .product-form-card p input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--caramel);
+        cursor: pointer;
+    }
+
+    .product-form-card p input[type="file"] {
+        background: transparent;
+        border: 1px dashed rgba(200,134,74,.3);
+        color: var(--cream-dim);
+        cursor: pointer;
+        padding: .6rem 1rem;
+    }
+
+    .product-form-card ul {
+        list-style: none;
+        font-size: .75rem;
+        color: #d9786a;
+        margin-top: .3rem;
+    }
+
+    /* Form actions */
+    .form-actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 1.75rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(200,134,74,.12);
+    }
+
+    .btn-save {
+        display: inline-flex;
+        align-items: center;
+        gap: .55rem;
+        width: auto;
+        padding: .85rem 1.75rem;
+        font-size: .88rem;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-cancel {
+        font-size: .85rem;
+        color: var(--medium);
+        text-decoration: none;
+        transition: color .2s;
+    }
+
+    .btn-cancel:hover { color: var(--caramel); }
+
+    /* ── Tips sidebar ── */
+    .form-tips {
+        background: var(--roast);
+        border: 1px solid rgba(200,134,74,.14);
+        border-radius: 16px;
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+        position: sticky;
+        top: 88px;
+    }
+
+    .tips-eyebrow {
+        font-size: .68rem;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        color: var(--caramel);
+    }
+
+    .tip-item {
+        display: flex;
+        gap: .85rem;
+        align-items: flex-start;
+    }
+
+    .tip-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: .1rem; }
+
+    .tip-title {
+        font-size: .82rem;
+        font-weight: 600;
+        color: var(--cream);
+        margin-bottom: .25rem;
+    }
+
+    .tip-body { font-size: .78rem; color: var(--medium); line-height: 1.55; }
+
+    /* ── Responsive ── */
+    @media (max-width: 720px) {
+        .form-layout { grid-template-columns: 1fr; }
+        .form-tips { position: static; }
+    }
+
+    @media (max-width: 500px) {
+        .admin-page { padding: 2.5rem 1.25rem 4rem; }
+        .product-form-card { padding: 1.5rem; }
+    }
+</style>
+
+{% endblock %}
